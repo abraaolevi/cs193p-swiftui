@@ -62,13 +62,13 @@
 			children = (
 				8E88D5BC260AAA730050571A /* AppDelegate.swift */,
 				8E88D5BE260AAA730050571A /* SceneDelegate.swift */,
-				8E88D5C0260AAA730050571A /* EmojiMemmoryGameView.swift */,
 				8E88D5C2260AAA740050571A /* Assets.xcassets */,
 				8E88D5C7260AAA740050571A /* LaunchScreen.storyboard */,
 				8E88D5CA260AAA740050571A /* Info.plist */,
 				8E88D5C4260AAA740050571A /* Preview Content */,
 				8E88D5D1260F4A7C0050571A /* MemoryGame.swift */,
 				8E88D5D4260F4D730050571A /* EmojiMemoryGame.swift */,
+				8E88D5C0260AAA730050571A /* EmojiMemmoryGameView.swift */,
 			);
 			path = Memorize;
 			sourceTree = "<group>";
