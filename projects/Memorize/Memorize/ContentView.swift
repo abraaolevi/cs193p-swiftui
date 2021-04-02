@@ -16,6 +16,7 @@ struct ContentView: View {
                 CardView(card: card).onTapGesture {
                     viewModel.choose(card: card)
                 }
+                .frame(width: 40, height: 60, alignment: .center)
             }
         }
         .padding()
