@@ -23,7 +23,7 @@ class EmojiMemoryGame: ObservableObject {
     @Published private var theme: EmojiMemoryGameTheme
     @Published private var model: MemoryGame<String>
 
-    static func themeForMemoryGame() -> EmojiMemoryGameTheme {
+    private static func themeForMemoryGame() -> EmojiMemoryGameTheme {
         let smilesTheme = EmojiMemoryGameTheme(name: "Smileys", emojis: ["😀", "😅", "😂", "😉", "😇", "😘", "😋", "🤑", "😐", "😬", "😔", "🥶", "🥳", "😎", "😱"],
                                                showsTheNumberOfCardsRandomly: false, color: .yellow)
         let animalsTheme = EmojiMemoryGameTheme(name: "Animals", emojis: ["🦁", "🦊", "🐴", "🐮", "🐷", "🐭", "🐶", "🐵", "🐰", "🐼", "🐔", "🐧", "🐸", "🐳", "🐙"],
@@ -42,7 +42,7 @@ class EmojiMemoryGame: ObservableObject {
         return themes[Int.random(in: 0..<themes.count)]
     }
     
-    static func createMemoryGame(with theme: EmojiMemoryGameTheme) -> MemoryGame<String> {
+    private static func createMemoryGame(with theme: EmojiMemoryGameTheme) -> MemoryGame<String> {
         return MemoryGame<String>(numberOfPairsOfCards: theme.numberOfPairsOfCards) { pairIndex in
             theme.emojis[pairIndex]
         }
