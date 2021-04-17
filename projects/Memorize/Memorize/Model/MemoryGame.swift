@@ -11,15 +11,15 @@ import Foundation
 struct MemoryGame<CardContent> where CardContent: Equatable {
     private(set) var cards: Array<Card>
 
-    private(set) var points: Int = 0
+    private(set) var score: Int = 0
     
-    private var indexAlreadySeenCards: Set<Int> = []
+    private var indexAlreadySeenCards: [Int: Int] = [:]
     
     private var indexOfTheOneAndTheOnlyFaceUpCard: Int? {
         get { cards.indices.filter({ cards[$0].isFaceUp }).only }
         set {
             for index in cards.indices {
-                cards[index].isFaceUp = index == newValue
+                cards[index].isFaceUp = (index == newValue)
             }
         }
     }
@@ -32,22 +32,35 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
                 if cards[chosenIndex].content == cards[potentialMatchIndex].content {
                     cards[chosenIndex].isMatched = true
                     cards[potentialMatchIndex].isMatched = true
-                    points += 2
-                } else  if indexAlreadySeenCards.contains(chosenIndex) {
-                    points -= 3
+                    score += 2
                 } else {
-                    points -= 1
+                    for (_, numberOfTimeItWasSeen) in indexAlreadySeenCards {
+                        if numberOfTimeItWasSeen > 1 {
+                            score -= 1
+                        }
+                    }
                 }
                 
+                markAsSeen(index: chosenIndex)
+                markAsSeen(index: potentialMatchIndex)
+
                 cards[chosenIndex].isFaceUp = true
                 
             } else {
                 
-                indexAlreadySeenCards.insert(chosenIndex)
-                
                 indexOfTheOneAndTheOnlyFaceUpCard = chosenIndex
+                
             }
         }
+    }
+    
+    private mutating func markAsSeen(index: Int) {
+        if let count = indexAlreadySeenCards[index] {
+            indexAlreadySeenCards[index] = count + 1
+        } else {
+            indexAlreadySeenCards[index] = 1
+        }
+        
     }
 
     init(numberOfPairsOfCards: Int, contentCardFactory: (Int) -> CardContent) {

@@ -43,7 +43,7 @@ class EmojiMemoryGame: ObservableObject {
     }
     
     var score: String {
-        "Score: \(model.points)"
+        "Score: \(model.score)"
     }
     
     // MARK: - Intent(s)
