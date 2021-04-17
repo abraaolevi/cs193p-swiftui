@@ -14,7 +14,7 @@ struct EmojiMemoryGameView: View {
         NavigationView {
             VStack {
                 Grid(viewModel.cards) { card in
-                    CardView(card: card).onTapGesture {
+                    CardView(card: card, themeColor: viewModel.color).onTapGesture {
                         viewModel.choose(card: card)
                     }
                     .padding(5)
@@ -39,6 +39,7 @@ struct EmojiMemoryGameView: View {
 
 struct CardView: View {
     var card: MemoryGame<String>.Card
+    var themeColor: Color
     
     var body: some View {
         GeometryReader { geometry in
@@ -57,7 +58,7 @@ struct CardView: View {
                 Text(card.content)
                     .font(.system(size: fontSize(for: size)))
             }
-            .cardify(isFaceUp: card.isFaceUp)
+            .cardify(isFaceUp: card.isFaceUp, themeColor: themeColor)
         }
     }
     
