@@ -13,55 +13,71 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
 
     private(set) var score: Int = 0
     
-    private var indexAlreadySeenCards: [Int: Int] = [:]
-    
     private var indexOfTheOneAndTheOnlyFaceUpCard: Int? {
-        get { cards.indices.filter({ cards[$0].isFaceUp }).only }
+        get {
+            cards.indices.filter({ cards[$0].isFaceUp }).only
+        }
         set {
             for index in cards.indices {
                 cards[index].isFaceUp = (index == newValue)
+                cards[index].faceUpTime = Date()
             }
         }
     }
 
     mutating func choose(card: Card) {
-        if let chosenIndex = cards.index(matching: card), !cards[chosenIndex].isFaceUp, !cards[chosenIndex].isMatched {
-            
-            if let potentialMatchIndex = indexOfTheOneAndTheOnlyFaceUpCard {
-                
-                if cards[chosenIndex].content == cards[potentialMatchIndex].content {
-                    cards[chosenIndex].isMatched = true
-                    cards[potentialMatchIndex].isMatched = true
-                    score += 2
-                } else {
-                    for (_, numberOfTimeItWasSeen) in indexAlreadySeenCards {
-                        if numberOfTimeItWasSeen > 1 {
-                            score -= 1
-                        }
-                    }
-                }
-                
-                markAsSeen(index: chosenIndex)
-                markAsSeen(index: potentialMatchIndex)
+        guard let chosenIndex = cards.index(matching: card), !cards[chosenIndex].isFaceUp, !cards[chosenIndex].isMatched else {
+            return
+        }
 
-                cards[chosenIndex].isFaceUp = true
+        if let potentialMatchIndex = indexOfTheOneAndTheOnlyFaceUpCard {
+
+            let multiplier = scoreMultiplier(for: cards[potentialMatchIndex])
+            
+            if cards[chosenIndex].content == cards[potentialMatchIndex].content {
+                
+                cards[chosenIndex].isMatched = true
+                cards[potentialMatchIndex].isMatched = true
+                
+                score += 2 * multiplier
                 
             } else {
                 
-                indexOfTheOneAndTheOnlyFaceUpCard = chosenIndex
+                if cards[chosenIndex].isAlreadySeen {
+                    score -= 1 * multiplier
+                }
+                
+                if cards[potentialMatchIndex].isAlreadySeen {
+                    score -= 1 * multiplier
+                }
                 
             }
+
+            cards[chosenIndex].isFaceUp = true
+            
+            cards[chosenIndex].isAlreadySeen = true
+            cards[potentialMatchIndex].isAlreadySeen = true
+            
+        } else {
+            
+            indexOfTheOneAndTheOnlyFaceUpCard = chosenIndex
+            
         }
+    
     }
     
-    private mutating func markAsSeen(index: Int) {
-        if let count = indexAlreadySeenCards[index] {
-            indexAlreadySeenCards[index] = count + 1
-        } else {
-            indexAlreadySeenCards[index] = 1
+    private func scoreMultiplier(for card: Card) -> Int {
+        guard let faceUpTime = card.faceUpTime else {
+            return 1
         }
         
+        let now = Date()
+        let interval = faceUpTime.timeIntervalSinceReferenceDate - now.timeIntervalSinceReferenceDate
+        let multiplier = 10 - Int(interval)
+        
+        return max(multiplier, 1)
     }
+
 
     init(numberOfPairsOfCards: Int, contentCardFactory: (Int) -> CardContent) {
         cards = Array<Card>()
@@ -81,5 +97,8 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
         var isMatched: Bool = false
         var content: CardContent
         var id: Int
+        
+        var isAlreadySeen: Bool = false
+        var faceUpTime: Date? = nil
     }
 }
