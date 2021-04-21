@@ -7,9 +7,24 @@
 
 import SwiftUI
 
-struct Cardify: ViewModifier {
-    var isFaceUp: Bool
-    var themeColor: Color
+struct Cardify: AnimatableModifier {
+
+    private var rotation: Double
+    private var themeColor: Color
+    
+    init(isFaceUp: Bool, themeColor: Color) {
+        rotation = isFaceUp ? 0 : 180
+        self.themeColor = themeColor
+    }
+    
+    var isFaceUp: Bool {
+        rotation < 90
+    }
+
+    var animatableData: Double {
+        get { rotation }
+        set { rotation = newValue }
+    }
     
     // Assignment 2 - Extra Credit 1: Gradient Theme
     var themeColorGradient: LinearGradient {
@@ -18,15 +33,18 @@ struct Cardify: ViewModifier {
     
     func body(content: Content) -> some View {
         ZStack {
-            if isFaceUp {
+            Group {
                 RoundedRectangle(cornerRadius: cornerRadius).fill(Color.white)
                 RoundedRectangle(cornerRadius: cornerRadius).stroke(lineWidth: edgeLineWidth)
-                
                 content
-            } else {
-                RoundedRectangle(cornerRadius: cornerRadius).fill(themeColorGradient)
             }
+            .opacity(isFaceUp ? 1 : 0)
+                
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .fill(themeColorGradient)
+                .opacity(isFaceUp ? 0 : 1)
         }
+        .rotation3DEffect(Angle.degrees(rotation), axis: (0, 1, 0))
     }
     
     // MARK: - Drawing constants
