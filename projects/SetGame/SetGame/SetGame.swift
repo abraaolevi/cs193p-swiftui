@@ -25,6 +25,88 @@ struct SetGame {
         }
         
         deck[card.id].isSelected = !deck[card.id].isSelected
+        
+        if selectedCards.count == 3 {
+    
+            var countNumber = 0
+            var countShape = 0
+            var countShadding = 0
+            var countColor = 0
+
+            for cardA in selectedCards {
+                for cardB in selectedCards {
+                    if cardA.id == cardB.id {
+                        continue
+                    }
+                    
+                    if cardA.number == cardB.number {
+                        countNumber += 1
+                    }
+                    
+                    if cardA.shape == cardB.shape {
+                        countShape += 1
+                    }
+                    
+                    if cardA.shading == cardB.shading {
+                        countShadding += 1
+                    }
+                    
+                    if cardA.color == cardB.color {
+                        countColor += 1
+                    }
+                }
+            }
+            
+            let isSet = isSet([
+                .number: getState(of: countNumber),
+                .shape: getState(of: countShape),
+                .shadding: getState(of: countShadding),
+                .color: getState(of: countColor)
+            ])
+            
+            
+            if isSet {
+                for selectedCard in selectedCards {
+                    deck[selectedCard.id].isMatched = true
+                }
+            }
+        }
+    }
+    
+    private func isSet(_ result: [Feature: State]) -> Bool {
+        
+        var countSameFeatures = 0
+        var countDifferentFeatures = 0
+        
+        for feature in Feature.allCases {
+            if result[feature] == .allSame {
+                countSameFeatures += 1
+            }
+            
+            if result[feature] == .allDifferent {
+                countDifferentFeatures += 1
+            }
+        }
+        
+        return countSameFeatures == 3 || countDifferentFeatures == 4
+    }
+    
+    private func getState(of numberOccurrencies: Int) -> State {
+        if numberOccurrencies == 0 {
+            return .allDifferent
+        }
+        if numberOccurrencies == 6 {
+            return .allSame
+        }
+        return .someDifferent
+    }
+    
+    enum Feature: CaseIterable {
+        case number, shape, shadding, color
+    }
+    
+    enum State {
+        case allDifferent, someDifferent, allSame
     }
     
     struct Card: Identifiable {
